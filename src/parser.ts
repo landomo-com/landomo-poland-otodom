@@ -1,5 +1,5 @@
 import { Property, OtodomListing, OtodomResponse } from './types.js';
-import * as normalizerUtils from '@shared/normalizer-utils.js';
+import * as normalizerUtils from './normalizer-utils';
 
 const BASE_URL = 'https://www.otodom.pl';
 

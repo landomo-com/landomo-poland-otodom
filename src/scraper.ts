@@ -1,7 +1,7 @@
 import { Property, ScraperConfig, OtodomResponse } from './types.js';
 import { parseNextData, extractListings, extractPagination, transformListing } from './parser.js';
 import Redis from 'ioredis';
-import { createLogger } from '@shared/logger';
+import { createLogger } from './logger';
 
 const BASE_URL = 'https://www.otodom.pl';
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';

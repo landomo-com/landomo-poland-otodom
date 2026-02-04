@@ -150,3 +150,10 @@ export interface ScraperConfig {
   delayMs?: number;
   redisUrl?: string;
 }
+
+export interface ScraperResult {
+  properties: Property[];
+  totalFound: number;
+  pagesScraped: number;
+  errors: string[];
+}

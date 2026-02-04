@@ -24,9 +24,9 @@
  * - Token expiry: handled with buffer
  */
 
-import { BaseApiClient, ApiClientConfig } from '@shared/api-client.js';
-import { createLogger } from '@shared/logger.js';
-import * as normalizerUtils from '@shared/normalizer-utils.js';
+import { BaseApiClient, ApiClientConfig } from './api-client';
+import { createLogger } from './logger';
+import * as normalizerUtils from './normalizer-utils';
 import type { SearchOptions } from './types.js';
 
 interface OtodomApiConfig extends ApiClientConfig {

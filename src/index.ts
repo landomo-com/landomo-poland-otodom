@@ -1,6 +1,6 @@
 import { OtodomScraper } from './scraper.js';
 import { ScraperConfig } from './types.js';
-import { createLogger } from '@shared/logger';
+import { createLogger } from './logger';
 
 const logger = createLogger('module');
 
