@@ -5,7 +5,7 @@
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": false,
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -16,5 +16,17 @@
     "moduleResolution": "node"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "src/api-client.ts",
+    "src/api-scraper.ts",
+    "src/index.ts",
+    "src/scraper.ts",
+    "src/parser.ts",
+    "src/stealth.ts",
+    "src/redis.ts",
+    "src/normalizer-utils.ts"
+  ]
 }

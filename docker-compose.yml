@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Redis - Queue and caching
+  redis:
+    image: redis:7-alpine
+    container_name: quintoandar-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Coordinator - City-based discovery (runs every 6 hours)
+  coordinator-city:
+    build: .
+    container_name: quintoandar-coordinator-city
+    command: npm run coordinator
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - LANDOMO_API_URL=${LANDOMO_API_URL}
+      - LANDOMO_API_KEY=${LANDOMO_API_KEY}
+      - BUSINESS_CONTEXT=${BUSINESS_CONTEXT:-RENT}
+      - DEBUG=${DEBUG:-false}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: "no"  # Use external scheduler (cron, k8s CronJob, etc.)
+
+  # Coordinator - Geo grid discovery (runs every 12 hours)
+  coordinator-geo:
+    build: .
+    container_name: quintoandar-coordinator-geo
+    command: npm run coordinator:geo
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - LANDOMO_API_URL=${LANDOMO_API_URL}
+      - LANDOMO_API_KEY=${LANDOMO_API_KEY}
+      - BUSINESS_CONTEXT=${BUSINESS_CONTEXT:-RENT}
+      - GRID_SIZE=${GRID_SIZE:-0.5}
+      - DEBUG=${DEBUG:-false}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: "no"  # Use external scheduler
+
+  # Workers - Process details from queue (scale with replicas)
+  worker:
+    build: .
+    command: npm run worker
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - LANDOMO_API_URL=${LANDOMO_API_URL}
+      - LANDOMO_API_KEY=${LANDOMO_API_KEY}
+      - BUSINESS_CONTEXT=${BUSINESS_CONTEXT:-RENT}
+      - REQUEST_DELAY_MS=${REQUEST_DELAY_MS:-2000}
+      - DEBUG=${DEBUG:-false}
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      replicas: 3  # Run 3 workers in parallel
+    restart: unless-stopped
+
+  # Queue Stats Monitor (optional)
+  stats:
+    build: .
+    container_name: quintoandar-stats
+    command: npm run queue:stats
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    profiles:
+      - tools  # Only run when explicitly requested
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  default:
+    name: quintoandar-network

@@ -1,32 +1,21 @@
-/**
- * Simple logger utility for scraper
- * Replaces @shared/logger dependency
- */
+import winston from 'winston';
 
-export interface Logger {
-  info: (message: string, ...args: any[]) => void;
-  warn: (message: string, ...args: any[]) => void;
-  error: (message: string, ...args: any[]) => void;
-  debug: (message: string, ...args: any[]) => void;
-}
-
-export function createLogger(module: string): Logger {
-  const prefix = `[${module}]`;
-
-  return {
-    info: (message: string, ...args: any[]) => {
-      console.log(`${prefix} ${message}`, ...args);
-    },
-    warn: (message: string, ...args: any[]) => {
-      console.warn(`${prefix} ${message}`, ...args);
-    },
-    error: (message: string, ...args: any[]) => {
-      console.error(`${prefix} ${message}`, ...args);
-    },
-    debug: (message: string, ...args: any[]) => {
-      if (process.env.DEBUG === 'true') {
-        console.debug(`${prefix} ${message}`, ...args);
-      }
-    }
-  };
-}
+export const logger = winston.createLogger({
+  level: process.env.DEBUG === 'true' ? 'debug' : 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.printf(({ timestamp, level, message, ...meta }) => {
+      const metaStr = Object.keys(meta).length ? JSON.stringify(meta) : '';
+      return `${timestamp} [${level}]: ${message} ${metaStr}`;
+    })
+  ),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      ),
+    }),
+  ],
+});

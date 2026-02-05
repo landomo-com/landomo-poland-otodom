@@ -1,87 +1,69 @@
-export interface Property {
-  // Core fields (10 minimum)
-  id: string;
-  source: string;
-  url: string;
+export interface StandardProperty {
   title: string;
   price: number | null;
   currency: string;
-  propertyType: string;
-  listingType: 'sale' | 'rent' | 'lease' | 'other';
+  property_type: string;
+  transaction_type: 'sale' | 'rent' | 'lease' | 'other';
+  
   location: {
     address?: string;
     city?: string;
     district?: string;
     province?: string;
     country: string;
+    postal_code?: string;
     coordinates?: {
-      lat?: number;
-      lng?: number;
+      lat: number;
+      lon: number;
     };
   };
-  images: string[];
-  scrapedAt: string;
-
-  // Extended fields (5+)
-  pricePerSqm?: number;
-  pricePerSqft?: number;
-  description?: string;
-
+  
   details: {
-    bedrooms?: number;
-    bathrooms?: number;
     sqm?: number;
     sqft?: number;
     rooms?: number;
+    bedrooms?: number;
+    bathrooms?: number;
     floor?: string;
-    totalFloors?: number;
-    terrainArea?: number;
-    buildingYear?: number;
-    buildingAge?: number;
-    buildingType?: string;
-    furnished?: boolean | null;
-    parkingSpots?: number;
-    hasGarden?: boolean;
-    hasBalcony?: boolean;
+    total_floors?: number;
+    terrain_area?: number;
+    year_built?: number;
+    building_type?: string;
+    furnished?: boolean;
   };
-
+  
+  features: string[];
+  amenities?: Record<string, boolean>;
+  images: string[];
+  description?: string;
+  
   agent?: {
     name?: string;
     agency?: string;
     phone?: string;
     email?: string;
-    url?: string;
   };
-
-  features: string[];
-  amenities?: string[];
-  energyClass?: string;
-
+  
   status?: {
-    isPrivateOwner?: boolean;
-    isPromoted?: boolean;
-    isExclusiveOffer?: boolean;
-    isFeatured?: boolean;
-    isVerified?: boolean;
+    is_promoted?: boolean;
+    is_exclusive?: boolean;
+    is_verified?: boolean;
+    is_private_owner?: boolean;
   };
-
+  
   dates?: {
-    postedAt?: string;
-    updatedAt?: string;
-    createdAt?: string;
+    created_at?: string;
+    posted_at?: string;
+    updated_at?: string;
   };
-
+  
   development?: {
     id?: number;
     title?: string;
     url?: string;
   };
-
-  metadata?: {
-    source?: string;
-    portalName?: string;
-    country?: string;
-  };
+  
+  country_specific?: Record<string, any>;
 }
 
 export interface OtodomListing {
@@ -142,18 +124,116 @@ export interface OtodomResponse {
   };
 }
 
-export interface ScraperConfig {
-  transactionType: 'sale' | 'rent';
-  propertyType: 'mieszkanie' | 'dom' | 'dzialka' | 'lokal';
-  location?: string;
-  maxPages?: number;
-  delayMs?: number;
-  redisUrl?: string;
+export interface APIResponse {
+  hits?: {
+    hits?: Array<{
+      _id: string;
+      _source: any;
+    }>;
+    total?: {
+      value: number;
+    };
+  };
 }
 
+// Property type for transformer compatibility
+export interface Property {
+  id: string;
+  title: string;
+  description?: string;
+  price: number | null;
+  currency: string;
+  pricePerSqm?: number;
+  propertyType: string;
+  listingType: string;
+
+  location: {
+    address?: string;
+    city?: string;
+    district?: string;
+    province?: string;
+    postalCode?: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+  };
+
+  details: {
+    sqm?: number;
+    sqft?: number;
+    rooms?: number;
+    bedrooms?: number;
+    bathrooms?: number;
+    floor?: string;
+    totalFloors?: number;
+    terrainArea?: number;
+    buildingYear?: number;
+    yearBuilt?: number;
+    buildingType?: string;
+  };
+
+  features: string[];
+  amenities?: string[];
+  images: string[];
+
+  agent?: {
+    name?: string;
+    agency?: string;
+    phone?: string;
+    email?: string;
+  };
+
+  status?: {
+    isFeatured?: boolean;
+    isPromoted?: boolean;
+    isExclusiveOffer?: boolean;
+    isVerified?: boolean;
+    isPrivateOwner?: boolean;
+  };
+
+  dates?: {
+    createdAt?: string;
+    updatedAt?: string;
+  };
+
+  development?: {
+    id?: number;
+    title?: string;
+    url?: string;
+  };
+
+  energyClass?: string;
+  scrapedAt: string;
+}
+
+// City coordinates for geo-based scraping
+export interface CityCoordinates {
+  lat: number;
+  lng: number;
+  viewport?: {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+  };
+}
+
+// Scraper result type for Phase 2
 export interface ScraperResult {
-  properties: Property[];
-  totalFound: number;
-  pagesScraped: number;
-  errors: string[];
+  total: number;
+  scraped: number;
+  failed: number;
+  city: string;
+  state?: string;
+  properties: any[];
+}
+
+// Search options for API calls
+export interface SearchOptions {
+  city?: string;
+  transactionType?: 'sale' | 'rent';
+  propertyType?: string;
+  page?: number;
+  limit?: number;
 }

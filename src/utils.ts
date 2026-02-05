@@ -1,17 +1,26 @@
 /**
- * Simple utility functions
- * Replaces @shared/utils dependency
+ * Random delay between min and max milliseconds
  */
-
-export async function delay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+export async function randomDelay(minMs: number, maxMs: number): Promise<void> {
+  const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+  return new Promise(resolve => setTimeout(resolve, delay));
 }
 
-export function sleep(ms: number): Promise<void> {
-  return delay(ms);
-}
-
-export function randomDelay(min: number, max: number): Promise<void> {
-  const ms = Math.floor(Math.random() * (max - min + 1)) + min;
-  return delay(ms);
+/**
+ * Retry function with exponential backoff
+ */
+export async function retry<T>(
+  fn: () => Promise<T>,
+  maxAttempts: number = 3,
+  delayMs: number = 1000
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempt === maxAttempts) throw error;
+      await randomDelay(delayMs * attempt, delayMs * attempt * 2);
+    }
+  }
+  throw new Error('Retry failed');
 }

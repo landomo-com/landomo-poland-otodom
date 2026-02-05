@@ -1,17 +1,55 @@
 {
   "name": "@landomo/scraper-poland-otodom",
   "version": "1.0.0",
-  "type": "module",
+  "private": true,
+  "description": "Landomo scraper for Otodom in Poland",
+  "main": "src/scraper-v3.ts",
   "scripts": {
-    "scrape": "tsx src/index.ts",
-    "test": "tsx src/index.ts --limit 36"
+    "start": "tsx src/scraper-v3.ts",
+    "start:v3": "tsx src/scraper-v3.ts",
+    "start:city": "tsx src/scraper-city.ts",
+    "start:geo": "tsx src/scraper-geo-grid.ts",
+    "coordinator": "tsx src/coordinator.ts city",
+    "coordinator:geo": "tsx src/coordinator.ts geo",
+    "worker": "tsx src/worker.ts",
+    "worker:verifier": "tsx src/worker-verifier.ts",
+    "metrics": "tsx src/metrics-server.ts",
+    "queue:stats": "tsx src/queue-stats.ts stats",
+    "queue:clear": "tsx src/queue-stats.ts clear",
+    "queue:retry-failed": "tsx src/queue-stats.ts retry-failed",
+    "queue:show-failed": "tsx src/queue-stats.ts show-failed",
+    "test:integration": "tsx src/test-integration.ts",
+    "dev": "tsx watch src/scraper.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "ioredis": "^5.3.2"
+    "@types/ioredis": "^4.28.10",
+    "@types/pg": "^8.10.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.0.0",
+    "ioredis": "^5.9.2",
+    "node-tls-client": "^2.1.0",
+    "pg": "^8.11.0",
+    "playwright": "^1.58.1",
+    "prom-client": "^15.1.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "tsx": "^4.7.0",
-    "typescript": "^5.9.3"
-  }
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "landomo",
+    "scraper",
+    "real-estate",
+    "poland",
+    "otodom"
+  ],
+  "author": "Landomo",
+  "license": "UNLICENSED"
 }
